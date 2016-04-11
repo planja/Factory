@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Parser">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/Parser.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
