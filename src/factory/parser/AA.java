@@ -1,16 +1,17 @@
 package factory.parser;
 
-import com.google.gson.Gson;
 import db.manager.DatabaseManager;
 import factory.ParserResultHandler;
-import factory.model.*;
+import factory.model.ExtraData;
+import factory.model.IMTAward;
+import factory.model.IMTFlight;
+import factory.model.IMTInfo;
 import factory.utils.Utils;
 import parser.model.Award;
 import parser.model.Flight;
 import parser.model.Info;
 
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -27,7 +28,7 @@ import static parser.Parser.*;
 public class AA implements ParserResultHandler {
 
     @Override
-    public List<IMTAward> handleResponse(List<Award> flights, String flightClass, String seats, IMTError error, String requestId, String userId, String from, String to) throws ParseException, SQLException, Exception {
+    public List<IMTAward> processResult(List<Award> flights, String flightClass, String seats) throws Exception {
         System.out.println("AA");
         String result = "";
 
@@ -200,14 +201,7 @@ public class AA implements ParserResultHandler {
 
         System.out.println("AA handler. Flight size after processing= [" + awardList.size() + "]");
 
-        IMTDataObject dataObject = new IMTDataObject(awardList);
-        dataObject.setError(error);
 
-        Gson gson = new Gson();
-
-        result = gson.toJson(dataObject);
-
-        String callback = Utils.postFlights(requestId, userId, result, "AA", from, to, seats);
         return awardList;
     }
 

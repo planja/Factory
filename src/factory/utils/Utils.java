@@ -5,27 +5,10 @@
  */
 package factory.utils;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.client.params.CookiePolicy;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.LaxRedirectStrategy;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.CoreProtocolPNames;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
-import org.json.JSONObject;
 import org.lorecraft.phparser.SerializedPhpParser;
-import parser.utils.Account;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -40,7 +23,6 @@ import static parser.Parser.FIRST;
 import static parser.Parser.PREMIUM_ECONOMY;
 import static parser.Parser.UPPER_CLASS;
 import static parser.dl.DLParser.*;
-import static parser.utils.Utils.responseToString;
 
 /**
  * @author Gulya
@@ -118,172 +100,6 @@ public class Utils {
 
             System.out.println("(" + offset + ") " + zoneId + ", " + longName);
         }
-    }
-
-    public static String postFlights(String requestId, String userId, String result, String parser, String from, String to, String seats) throws UnsupportedEncodingException, IOException {
-
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-        httpclient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
-        httpclient.setCookieStore(new BasicCookieStore());
-        httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0");
-        httpclient.setRedirectStrategy(new LaxRedirectStrategy());
-//
-//        org.apache.http.conn.ssl.SSLSocketFactory sf = org.apache.http.conn.ssl.SSLSocketFactory.getSocketFactory();
-//        sf.setHostnameVerifier(new MyHostnameVerifier());
-//        org.apache.http.conn.scheme.Scheme sch = new Scheme("https", 443, sf);
-//
-//        httpclient.getConnectionManager().getSchemeRegistry().register(sch);
-
-        HttpPost httpPost = new HttpPost("https://fly3z.com/api/insertFlights");
-
-//            HttpPost httpPost = new HttpPost("http://imt.websolution.by/api/insertFlights");
-        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-
-        nameValuePairs.add(new BasicNameValuePair("request_id", requestId));
-        nameValuePairs.add(new BasicNameValuePair("user_id", userId));
-        nameValuePairs.add(new BasicNameValuePair("data", result));
-        nameValuePairs.add(new BasicNameValuePair("parser", parser));
-        nameValuePairs.add(new BasicNameValuePair("from", from));
-        nameValuePairs.add(new BasicNameValuePair("to", to));
-        nameValuePairs.add(new BasicNameValuePair("seats", seats));
-
-        httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-        HttpResponse hResponse = null;
-        HttpEntity entity = null;
-
-        hResponse = httpclient.execute(httpPost);
-        entity = hResponse.getEntity();
-
-        String callback = responseToString(entity.getContent());
-
-        return callback;
-    }
-
-    public static String postError(String requestId, String parser, String errorText) throws UnsupportedEncodingException, IOException {
-
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-        httpclient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
-        httpclient.setCookieStore(new BasicCookieStore());
-        httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0");
-        httpclient.setRedirectStrategy(new LaxRedirectStrategy());
-
-//        org.apache.http.conn.ssl.SSLSocketFactory sf = org.apache.http.conn.ssl.SSLSocketFactory.getSocketFactory();
-//        sf.setHostnameVerifier(new MyHostnameVerifier());
-//        org.apache.http.conn.scheme.Scheme sch = new Scheme("https", 443, sf);
-//
-//        httpclient.getConnectionManager().getSchemeRegistry().register(sch);
-        HttpPost httpPost = new HttpPost("https://fly3z.com/api/insertError/");
-
-//                HttpPost httpPost = new HttpPost("http://imt.websolution.by/api/insertError/");
-        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-
-        nameValuePairs.add(new BasicNameValuePair("request_id", requestId));
-        nameValuePairs.add(new BasicNameValuePair("parser", parser));
-        nameValuePairs.add(new BasicNameValuePair("error_text", errorText));
-
-        httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-        HttpResponse hResponse = null;
-        HttpEntity entity = null;
-
-        hResponse = httpclient.execute(httpPost);
-        entity = hResponse.getEntity();
-
-        String callback = responseToString(entity.getContent());
-
-        return callback;
-    }
-
-    public static Account getAccount(String parser) throws IOException {
-
-        Account account = new Account();
-
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-        httpclient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
-        httpclient.setCookieStore(new BasicCookieStore());
-        httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0");
-        httpclient.setRedirectStrategy(new LaxRedirectStrategy());
-
-//        org.apache.http.conn.ssl.SSLSocketFactory sf = org.apache.http.conn.ssl.SSLSocketFactory.getSocketFactory();
-//        sf.setHostnameVerifier(new MyHostnameVerifier());
-//        org.apache.http.conn.scheme.Scheme sch = new Scheme("https", 443, sf);
-//
-//        httpclient.getConnectionManager().getSchemeRegistry().register(sch);
-        HttpGet httpGet = new HttpGet("https://fly3z.com/accounts/getBestAccount/" + parser + "/JSON");
-
-        HttpResponse hResponse = null;
-        HttpEntity entity = null;
-
-        hResponse = httpclient.execute(httpGet);
-        entity = hResponse.getEntity();
-
-        String callback = responseToString(entity.getContent());
-        JSONObject jsonObj = new JSONObject(callback);
-
-        String id = jsonObj.getJSONObject("Account").getString("id");
-        String login = jsonObj.getJSONObject("Account").getString("account_login");
-        String password = jsonObj.getJSONObject("Account").getString("account_password");
-        String pin = jsonObj.getJSONObject("Account").getString("account_pin");
-
-        if (!jsonObj.getJSONObject("Proxy").isNull("id") && jsonObj.getJSONObject("Proxy").get("id") instanceof String && jsonObj.getJSONObject("Proxy").getString("id") != null && jsonObj.getJSONObject("Proxy").getString("broken").length() > 3) {
-
-            account.setProxy(true);
-            account.setIp(jsonObj.getJSONObject("Proxy").getString("proxy").split(":")[0]);
-            account.setPort(jsonObj.getJSONObject("Proxy").getString("proxy").split(":")[1]);
-            account.setProxy_login(jsonObj.getJSONObject("Proxy").getString("proxy_login"));
-            account.setProxy_password(jsonObj.getJSONObject("Proxy").getString("proxy_password"));
-        }
-
-        account.setId(id);
-        account.setLogin(login);
-        account.setPassword(password);
-        account.setPin(pin);
-
-        return account;
-    }
-
-    public static void badAccount(String id) throws IOException {
-
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-        httpclient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
-        httpclient.setCookieStore(new BasicCookieStore());
-        httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0");
-        httpclient.setRedirectStrategy(new LaxRedirectStrategy());
-
-//        org.apache.http.conn.ssl.SSLSocketFactory sf = org.apache.http.conn.ssl.SSLSocketFactory.getSocketFactory();
-//        sf.setHostnameVerifier(new MyHostnameVerifier());
-//        org.apache.http.conn.scheme.Scheme sch = new Scheme("https", 443, sf);
-//
-//        httpclient.getConnectionManager().getSchemeRegistry().register(sch);
-        HttpGet httpGet = new HttpGet("https://fly3z.com/accounts/markAccountAsBroken/" + id);
-
-        HttpResponse hResponse = null;
-        HttpEntity entity = null;
-
-        hResponse = httpclient.execute(httpGet);
-        entity = hResponse.getEntity();
-
-        String callback = responseToString(entity.getContent());
-    }
-
-    public static List<Date> getDaysBetweenDates(Date startDate, Date endDate) {
-
-        List<Date> dates = new ArrayList<Date>();
-
-        Calendar calendar = new GregorianCalendar();
-        calendar.setTime(startDate);
-
-        while (calendar.getTime().before(endDate)) {
-
-            Date result = calendar.getTime();
-            dates.add(result);
-            calendar.add(Calendar.DATE, 1);
-        }
-
-        dates.add(endDate);
-
-        return dates;
     }
 
     public static String getHoursBetweenDays(Date startDate, Date endDate) throws Exception {
@@ -973,59 +789,5 @@ public class Utils {
         return airport;
     }
 
-    public static String extendAirport(String value) {
-//NYC  New York Metro NY US =                       JFK  LGA  EWR
-//PAR  Paris Metro FR =                                     CDG  ORY 
-//LON  London Metro UK =                                LHR  LGW  LCY 
-//MOW  Moscow Metro RU =                             SVO  DME  VKO
-//TYO  Tokyo Metro JP =                                    NRT  HND
-//MIL  Milan Metro IT =                                      MXP  LIN  
-//BUE  Buenos Aires Metro BA AR =                     EZE  AEP
-//RIO  Rio De Janeiro Metro RJ BR =                   GIG  SDU
-//WAS  Washington Metro DC US =                     IAD  DCA
-
-        if (value.contains("JFK") || value.contains("LGA") || value.contains("EWR")) {
-
-            return "NYC";
-
-        } else if (value.contains("MDW") || value.contains("ORD") || value.contains("CGX") || value.contains("UGN")) {
-
-            return "CHI";
-
-        } else if (value.contains("CDG") || value.contains("ORY")) {
-
-            return "PAR";
-
-        } else if (value.contains("LHR") || value.contains("LGW") || value.contains("LCY")) {
-
-            return "LON";
-
-        } else if (value.contains("SVO") || value.contains("DME") || value.contains("VKO")) {
-
-            return "MOW";
-
-        } else if (value.contains("NRT") || value.contains("HND")) {
-
-            return "TYO";
-
-        } else if (value.contains("MXP") || value.contains("LIN")) {
-
-            return "MIL";
-
-        } else if (value.contains("EZE") || value.contains("AEP")) {
-
-            return "BUE";
-
-        } else if (value.contains("GIG") || value.contains("SDU")) {
-
-            return "RIO";
-
-        } else if (value.contains("IAD") || value.contains("DCA")) {
-
-            return "WAS";
-        }
-
-        return value;
-    }
 
 }

@@ -1,9 +1,11 @@
 package factory.parser;
 
-import com.google.gson.Gson;
 import factory.ParserResultHandler;
 import factory.db.manager.DatabaseManager;
-import factory.model.*;
+import factory.model.ExtraData;
+import factory.model.IMTAward;
+import factory.model.IMTFlight;
+import factory.model.IMTInfo;
 import factory.utils.Utils;
 import org.jsoup.Jsoup;
 import parser.model.Award;
@@ -18,7 +20,7 @@ import static parser.Parser.*;
 public class MM implements ParserResultHandler {
 
     @Override
-    public List<IMTAward> handleResponse(List<Award> flights, String flightClass, String seats, IMTError error, String requestId, String userId, String from, String to) throws Exception {
+    public List<IMTAward> processResult(List<Award> flights, String flightClass, String seats) throws Exception {
 
         SimpleDateFormat date_format_res = new SimpleDateFormat("yyyy:MM:dd HH:mm");
         date_format_res.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -147,13 +149,6 @@ public class MM implements ParserResultHandler {
 
         System.out.println("MM handler. Flight size after processing= [" + awardList.size() + "]");
 
-        IMTDataObject dataObject = new IMTDataObject(awardList);
-
-        Gson gson = new Gson();
-
-        String result = gson.toJson(dataObject);
-
-        String callback = Utils.postFlights(requestId, userId, result, "LH", from, to, seats);
         return awardList;
     }
 

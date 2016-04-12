@@ -5,11 +5,11 @@ package factory;
  */
 public class Main {
     public static void main(String[] args) {
-/*
-      try {
+
+    /*  try {
             AbstractFactory factory = FactoryProducer.getFactory();
             ParserResultHandler parserResultHandler = factory.getParserResultHandler(AbstractFactory.ParserName.AA);
-            parserResultHandler.handleResponse(null, null, null, null, null, null, null, null);
+            parserResultHandler.processResult(null, null, null);
         } catch (Exception e) {
             System.out.println("ex");
         }*/
